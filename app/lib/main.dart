@@ -1,4 +1,5 @@
 // import 'dart:_http';
+import 'dart:convert';
 import 'dart:io';
 
 import 'dart:developer';
@@ -8,6 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_twitch/flutter_twitch.dart';
 import 'package:flutter_twitch_auth/flutter_twitch_auth.dart';
 import 'package:flutter_twitch_auth/globals.dart' as globals;
+import './streamer.dart';
+import 'fetch.dart';
+import 'modal_bottom_sheet.dart';
 
 void main() {
   FlutterTwitchAuth.initialize(
@@ -107,24 +111,92 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget streamRadio(user) {
-    fetchFollowedStream() async {
-      var url = Uri.parse(
-          'https://api.twitch.tv/helix/streams/followed?user_id=' + user.id);
-      log('globals.codeAuth' + globals.codeAuth);
+    globals.userId = user.id;
 
-      var response = await http.get(url, headers: {
-        'Authorization': 'Bearer ${globals.codeAuth}',
-        'Client-Id': globals.clientId,
-        'scope': 'user:read:follows'
-      });
-      log('Response status: ${response.statusCode}');
-      log('Response body: ${response.body}');
-      log(user.id);
-    }
+    // ModalBottomSheet(userId: user.id!);
 
-    fetchFollowedStream();
-
-    return const Text("You are logged");
+    return SizedBox(
+        width: 200.0,
+        height: 300.0,
+        child: FutureBuilder(
+          future: fetchFollowedStream(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              final streamerList = snapshot.data as List<Streamer>;
+              return Scaffold(
+                appBar: AppBar(
+                  title: Text(
+                    'Modal Bottom Sheet',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  centerTitle: true,
+                ),
+                body: Container(
+                  alignment: Alignment.center,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "MODAL BOTTOM SHEET EXAMPLE",
+                        style: TextStyle(
+                            fontStyle: FontStyle.italic,
+                            letterSpacing: 0.4,
+                            fontWeight: FontWeight.w600),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      RaisedButton(
+                        shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10.0))),
+                        onPressed: () {
+                          showModalBottomSheet(
+                              context: context,
+                              builder: (context) {
+                                return Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    for (var item in streamerList)
+                                      // const formatedImage = item.thumbnailUrl?.replaceAll('{width}', '15');
+                                      ListTile(
+                                        leading: Image(
+                                          image: NetworkImage(item.thumbnailUrl!
+                                              .replaceAll('{width}', '30')
+                                              .replaceAll('{height}', '30')),
+                                        ),
+                                        title: new Text(item.userName!),
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                        },
+                                      ),
+                                  ],
+                                );
+                              });
+                        },
+                        padding: EdgeInsets.only(
+                            left: 30, right: 30, top: 15, bottom: 15),
+                        color: Colors.pink,
+                        child: Text(
+                          'Click Me',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.6),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            } else if (snapshot.hasError) {
+              // handle error here
+              return Text('${snapshot.error}');
+            } else {
+              return CircularProgressIndicator(); // displays while loading data
+            }
+          },
+        ));
   }
 }
 
@@ -146,6 +218,7 @@ class _TwitchUserState extends State<TwitchUser> {
   void initState() {
     super.initState();
     user = widget.user;
+    globals.userId = user.id;
     log('login ${user.login}');
     log('id ${user.id}');
     log('id ${user.displayName}');
