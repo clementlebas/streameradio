@@ -1,16 +1,50 @@
-# stream_radio
+# flutter_twitch_auth
 
-A new Flutter project.
+[pub package](https://pub.dartlang.org/packages/flutter_twitch_auth)
 
-## Getting Started
+This package will provide a modal login with Twitch, you can get the "code" provided by the Twitch API to create your own authentication flow or get a user object once authentication is complete.
 
-This project is a starting point for a Flutter application.
+Created by Claudio Oliveira (https://twitter.com/cldlvr)
 
-A few resources to get you started if this is your first Flutter project:
+[Buy me a coffee ☕](https://www.buymeacoffee.com/claudiooliveira)
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+<img src="https://github.com/claudiooliveira/flutter_twitch_auth/blob/main/live_example.gif?raw=true" alt="Live Example" width="300"/>
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### Add dependency
+
+```yaml
+dependencies:
+  flutter_twitch_auth: ^0.0.1 #latest version
+```
+
+### Easy to use
+
+```dart
+
+// Initialize authentication with your app on the Twitch API
+
+void main() {
+
+  FlutterTwitchAuth.initialize(
+    twitchClientId: "<YOUR_CLIENT_ID>",
+    twitchClientSecret: "<YOUR_CLIENT_SECRET>",
+    twitchRedirectUri: "<YOUR_REDIRECT_URI>",
+  );
+
+  runApp(MyApp());
+}
+
+...
+
+//Show modal and get logged user data
+void _handleTwitchSignIn() async {
+  User? user = await FlutterTwitchAuth.authToUser(context);
+}
+
+//Or get the user code and use it with the Twitch API (or Flutter Twitch Package) to create your own login flow.
+void _handleTwitchSignIn() async {
+  String? code = await FlutterTwitchAuth.authToCode(context);
+}
+...
+
+```

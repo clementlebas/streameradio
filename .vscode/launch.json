@@ -5,17 +5,17 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "stream_radio",
-      "cwd": "stream_radio",
-      "request": "launch",
-      "type": "dart"
-    },
-    {
-      "name": "stream_radio (profile mode)",
-      "cwd": "stream_radio",
+      "name": "flutter_twitch_auth-main",
       "request": "launch",
       "type": "dart",
-      "flutterMode": "profile"
+      "program": "app/lib/main.dart"
+    },
+    {
+      "name": "flutter_twitch_auth-main (profile mode)",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "profile",
+      "program": "app/lib/main.dart"
     }
   ]
 }
