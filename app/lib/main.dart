@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      title: 'Flutter Twitch Auth Example',
+      title: 'Twitch Radio',
       home: MyHomePage(),
     );
   }
@@ -65,8 +65,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: user == null ? const Text("Streameradio") : TwitchUser(user!),
-        backgroundColor: Colors.purple,
+        title: user == null ? const Text("Twitch Radio") : TwitchUser(user!),
+        backgroundColor: const Color.fromRGBO(145, 70, 255, 1),
       ),
       body: Center(
         child: Column(
@@ -116,7 +116,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             backgroundColor: MaterialStateProperty.all<Color>(
-              const Color(0xff9146ff),
+              const Color.fromRGBO(145, 70, 255, 1),
             ),
             elevation: MaterialStateProperty.all<double>(3),
           ),
@@ -184,7 +184,7 @@ class _MyHomePageState extends State<MyHomePage> {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   final streamerList = snapshot.data as List<Streamer>;
-
+                  globals.streamUrl = streamerList[0].userLogin!;
                   return Scaffold(
                     body: Container(
                       alignment: Alignment.center,
@@ -194,31 +194,103 @@ class _MyHomePageState extends State<MyHomePage> {
                               context: context,
                               builder: (context) {
                                 return SizedBox(
-                                    height: 200, // Some height
+                                    height: 500, // Some height
                                     child: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       children: <Widget>[
                                         for (var item in streamerList)
-                                          ListTile(
-                                            leading: Image(
-                                              image: NetworkImage(item
-                                                  .thumbnailUrl!
-                                                  .replaceAll('{width}', '30')
-                                                  .replaceAll(
-                                                      '{height}', '30')),
-                                            ),
-                                            title: Text(item.userName!),
-                                            onTap: () {
-                                              Navigator.pop(context);
-                                            },
-                                          ),
+                                          FutureBuilder(
+                                              future: getPhoto(item.userId),
+                                              builder: (context, snapshot) {
+                                                var urlImage1 = item
+                                                    .thumbnailUrl!
+                                                    .replaceAll('{width}', '30')
+                                                    .replaceAll(
+                                                        '{height}', '30');
+                                                String urlImage;
+                                                if (snapshot.hasData) {
+                                                  urlImage =
+                                                      snapshot.data.toString();
+                                                } else if (snapshot.hasError) {
+                                                  // handle error here
+                                                  return Text(
+                                                      '${snapshot.error}');
+                                                } else {
+                                                  return const CircularProgressIndicator(
+                                                      strokeWidth:
+                                                          1); // displays while loading data
+                                                }
+
+                                                log('snapshot' + urlImage);
+                                                log('thumbnailUrl' + urlImage1);
+
+                                                return ListTile(
+                                                  leading: SizedBox(
+                                                    width: 35,
+                                                    height: 35,
+                                                    child: ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              50),
+                                                      child: Container(
+                                                        color: Colors.white,
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(1),
+                                                        child: ClipRRect(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      100),
+                                                          child: Image.network(
+                                                            urlImage,
+                                                            fit: BoxFit.cover,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  title: Text(item.userName!),
+                                                  onTap: () {
+                                                    Navigator.pop(context);
+                                                    getStreamUrl(item.userName!)
+                                                        .then((String result) {
+                                                      _pageManager
+                                                          .setChannel(result);
+                                                    });
+
+                                                    // _pageManager.pause();
+                                                    // FutureBuilder(
+                                                    //   future: getStreamUrl(
+                                                    //       item.userName!),
+                                                    //   builder:
+                                                    //       (context, snapshot) {
+                                                    //     if (snapshot.hasData) {
+                                                    //       log('snapshot' +
+                                                    //           snapshot.data
+                                                    //               .toString());
+                                                    //       var streamUrl =
+                                                    //           snapshot.data;
+                                                    //       _pageManager
+                                                    //           .setChannel(
+                                                    //               streamUrl);
+                                                    //     }
+                                                    //     Navigator.pop(context);
+                                                    //     return const CircularProgressIndicator(
+                                                    //         strokeWidth: 1);
+                                                    //   },
+                                                    // );
+                                                    // getChannelToken(item.userLogin);
+                                                  },
+                                                );
+                                              }),
                                       ],
                                     ));
                               });
                         },
                         style: ElevatedButton.styleFrom(
                           onPrimary: Colors.black87,
-                          primary: Colors.purple,
+                          primary: const Color.fromRGBO(145, 70, 255, 1),
                           shape: const RoundedRectangleBorder(
                             borderRadius: BorderRadius.all(Radius.circular(4)),
                           ),
@@ -237,7 +309,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   // handle error here
                   return Text('${snapshot.error}');
                 } else {
-                  return const CircularProgressIndicator(); // displays while loading data
+                  return const CircularProgressIndicator(
+                      strokeWidth: 1); // displays while loading data
                 }
               },
             ))

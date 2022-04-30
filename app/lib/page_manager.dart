@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
@@ -11,7 +13,8 @@ class PageManager {
   );
   final buttonNotifier = ValueNotifier<ButtonState>(ButtonState.paused);
 
-  static const url = 'https://luan.xyz/files/audio/ambient_c_motion.mp3';
+  static const url =
+      'https://video-weaver.fra05.hls.ttvnw.net/v1/playlist/Cp4EmnDEwliYc9faCfa30RItOGnFqiwOwuDezd1sSNth9vRhdlic1-H6h5U8QKFISJlXyvgEU8BB87bOEKq-A4bEMEWI3odp7jfs0LcQkqAA8uf5njJvFHe5tWI6y-klKynDrQBRy6UTEWGMkJz3fsbsW358HwVLg4_CihtVn8PmD78aCpedh27ls_FeJxskoXhqNLK4bJKLFlL7GgJEhA4ueYudQnLfHpAcoyjmLCj1vN-_H5nvtBsNtm8PtHeRMT4YzzAkKKTvVR_UEZCfM_SnSdh7PlXZJRNhzWTT6pMsGNCTD_lCpJMxDkthy6cfWuWpfnfT06MD-KZS0_5H44JeKPY_uEFnsHeS4s0LyiYvULNV2CWksNLu1jhBoGclWMSRWeYPLUrf0FCQxqUP0i6nji5_ISokBzUXpvY0HEEx_qtxvoLA-why05xegB07evT2Ytglg42-EEenk5FWVLql5F3cQrIBxzyWnRGw5_igg3Q-BjWjfu3TZKKabwO3p9us23U-3qAlBma0_DQB4J3706WIGy21wu7XyX-HrmY4an8xI34uxf3iRwRQZMqMp6lHnbzgjfd9_Lf-JNgGODSWUD4OrQvn8j6Ajg21KCeMCAf1e9B-9CUl4xE84cxKVRDSQw8JHuQWt6B66XTLAoTsEvia2zXFWLF9t15nJWdva0zNSuuuSlZLmKg5gz6_quB_oFC74qhwF1rhn8MbdH0aDIubMbCqkM2VEzv8ICABKglldS13ZXN0LTIwzQM.m3u8';
 
   late AudioPlayer _audioPlayer;
   PageManager() {
@@ -64,6 +67,12 @@ class PageManager {
         total: totalDuration ?? Duration.zero,
       );
     });
+  }
+
+  void setChannel(url) async {
+    await _audioPlayer.setUrl(url);
+    log('setChannel' + url);
+    _init();
   }
 
   void play() {
