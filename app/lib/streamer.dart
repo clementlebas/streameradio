@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 class StreamerList {
   final List<Streamer>? data;
 
@@ -7,7 +5,6 @@ class StreamerList {
 
   factory StreamerList.fromJson(Map<String, dynamic> parsedJson) {
     var list = parsedJson['data'] as List;
-    print(list.runtimeType);
     List<Streamer> dataList = list.map((i) => Streamer.fromJson(i)).toList();
 
     return StreamerList(data: dataList);
@@ -27,7 +24,6 @@ class Streamer {
   String? startedAt;
   String? language;
   String? thumbnailUrl;
-  List<String>? tagIds;
   bool? isMature;
 
   Streamer(
@@ -43,7 +39,6 @@ class Streamer {
       this.startedAt,
       this.language,
       this.thumbnailUrl,
-      this.tagIds,
       this.isMature});
 
   factory Streamer.fromJson(Map<String, dynamic> parsedJson) {
@@ -60,7 +55,6 @@ class Streamer {
         startedAt: parsedJson['started_at'],
         language: parsedJson['language'],
         thumbnailUrl: parsedJson['thumbnail_url'],
-        tagIds: parsedJson['tag_ids'].cast<String>(),
         isMature: parsedJson['is_mature']);
   }
 
@@ -78,7 +72,6 @@ class Streamer {
     data['started_at'] = startedAt;
     data['language'] = language;
     data['thumbnail_url'] = thumbnailUrl;
-    data['tag_ids'] = tagIds;
     data['is_mature'] = isMature;
     return data;
   }

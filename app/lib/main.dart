@@ -1,9 +1,6 @@
 // import 'dart:_http';
-import 'dart:convert';
-import 'dart:io';
 
 import 'dart:developer';
-import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_twitch/flutter_twitch.dart';
@@ -11,7 +8,6 @@ import 'package:flutter_twitch_auth/flutter_twitch_auth.dart';
 import 'package:flutter_twitch_auth/globals.dart' as globals;
 import './streamer.dart';
 import 'fetch.dart';
-import 'modal_bottom_sheet.dart';
 
 void main() {
   FlutterTwitchAuth.initialize(
@@ -113,8 +109,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget streamRadio(user) {
     globals.userId = user.id;
 
-    // ModalBottomSheet(userId: user.id!);
-
     return SizedBox(
         width: 200.0,
         height: 300.0,
@@ -124,32 +118,12 @@ class _MyHomePageState extends State<MyHomePage> {
             if (snapshot.hasData) {
               final streamerList = snapshot.data as List<Streamer>;
               return Scaffold(
-                appBar: AppBar(
-                  title: Text(
-                    'Modal Bottom Sheet',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  centerTitle: true,
-                ),
                 body: Container(
                   alignment: Alignment.center,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        "MODAL BOTTOM SHEET EXAMPLE",
-                        style: TextStyle(
-                            fontStyle: FontStyle.italic,
-                            letterSpacing: 0.4,
-                            fontWeight: FontWeight.w600),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      RaisedButton(
-                        shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(10.0))),
+                      ElevatedButton(
                         onPressed: () {
                           showModalBottomSheet(
                               context: context,
@@ -165,7 +139,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                               .replaceAll('{width}', '30')
                                               .replaceAll('{height}', '30')),
                                         ),
-                                        title: new Text(item.userName!),
+                                        title: Text(item.userName!),
                                         onTap: () {
                                           Navigator.pop(context);
                                         },
@@ -174,11 +148,15 @@ class _MyHomePageState extends State<MyHomePage> {
                                 );
                               });
                         },
-                        padding: EdgeInsets.only(
-                            left: 30, right: 30, top: 15, bottom: 15),
-                        color: Colors.pink,
-                        child: Text(
-                          'Click Me',
+                        style: ElevatedButton.styleFrom(
+                          onPrimary: Colors.black87,
+                          primary: Colors.purple,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(4)),
+                          ),
+                        ),
+                        child: const Text(
+                          '⇈ FOLLOWED CHANNELS ⇈',
                           style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w600,
@@ -193,7 +171,7 @@ class _MyHomePageState extends State<MyHomePage> {
               // handle error here
               return Text('${snapshot.error}');
             } else {
-              return CircularProgressIndicator(); // displays while loading data
+              return const CircularProgressIndicator(); // displays while loading data
             }
           },
         ));

@@ -52,7 +52,7 @@ MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\cl
 	android:appComponentFactory
 		ADDED from [androidx.core:core:1.6.0] C:\Users\cleme\.gradle\caches\transforms-2\files-2.1\122df2e57d294d1a53db26bbc3b813c1\core-1.6.0\AndroidManifest.xml:24:18-86
 	android:label
-		ADDED from C:\Users\cleme\dev\test_streameradio\streameradio\app\android\app\src\main\AndroidManifest.xml:4:9-32
+		ADDED from C:\Users\cleme\dev\test_streameradio\streameradio\app\android\app\src\main\AndroidManifest.xml:4:9-37
 	android:icon
 		ADDED from C:\Users\cleme\dev\test_streameradio\streameradio\app\android\app\src\main\AndroidManifest.xml:5:9-43
 activity#com.example.example.MainActivity
