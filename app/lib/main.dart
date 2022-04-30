@@ -8,6 +8,8 @@ import 'package:flutter_twitch_auth/flutter_twitch_auth.dart';
 import 'package:flutter_twitch_auth/globals.dart' as globals;
 import './streamer.dart';
 import 'fetch.dart';
+import 'page_manager.dart';
+import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 
 void main() {
   FlutterTwitchAuth.initialize(
@@ -39,11 +41,24 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   User? user;
+  late final PageManager _pageManager;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageManager = PageManager();
+  }
 
   void _handleTwitchSignIn() async {
     user = await FlutterTwitchAuth.authToUser(context);
 
     setState(() {});
+  }
+
+  @override
+  void dispose() {
+    _pageManager.dispose();
+    super.dispose();
   }
 
   @override
@@ -58,7 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(
-              width: 240,
+              // width: null,
               child: user == null ? twitchButton() : streamRadio(user!),
             ),
           ],
@@ -68,84 +83,137 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget twitchButton() {
-    return ElevatedButton(
-      onPressed: () => _handleTwitchSignIn(),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Image.asset(
-            'assets/icons/twitch.png',
-            width: 26,
-            height: 26,
+    return SizedBox(
+        width: 280,
+        child: ElevatedButton(
+          onPressed: () => _handleTwitchSignIn(),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Image.asset(
+                'assets/icons/twitch.png',
+                width: 26,
+                height: 26,
+              ),
+              const Expanded(
+                child: Text(
+                  "Sign in with Twitch",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
           ),
-          const Expanded(
-            child: Text(
-              "Sign in with Twitch",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+          style: ButtonStyle(
+            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(100),
               ),
             ),
+            backgroundColor: MaterialStateProperty.all<Color>(
+              const Color(0xff9146ff),
+            ),
+            elevation: MaterialStateProperty.all<double>(3),
           ),
-        ],
-      ),
-      style: ButtonStyle(
-        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-          RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(100),
-          ),
-        ),
-        backgroundColor: MaterialStateProperty.all<Color>(
-          const Color(0xff9146ff),
-        ),
-        elevation: MaterialStateProperty.all<double>(3),
-      ),
-    );
+        ));
   }
 
   Widget streamRadio(user) {
     globals.userId = user.id;
 
     return SizedBox(
-        width: 200.0,
-        height: 300.0,
-        child: FutureBuilder(
-          future: fetchFollowedStream(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              final streamerList = snapshot.data as List<Streamer>;
-              return Scaffold(
-                body: Container(
-                  alignment: Alignment.center,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ElevatedButton(
+      height: 700,
+      child: Column(children: <Widget>[
+        Expanded(
+            child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Column(
+            children: [
+              const Spacer(),
+              ValueListenableBuilder<ProgressBarState>(
+                valueListenable: _pageManager.progressNotifier,
+                builder: (_, value, __) {
+                  return ProgressBar(
+                    progress: value.current,
+                    buffered: value.buffered,
+                    total: value.total,
+                    onSeek: _pageManager.seek,
+                  );
+                },
+              ),
+              ValueListenableBuilder<ButtonState>(
+                valueListenable: _pageManager.buttonNotifier,
+                builder: (_, value, __) {
+                  switch (value) {
+                    case ButtonState.loading:
+                      return Container(
+                        margin: const EdgeInsets.all(8.0),
+                        width: 32.0,
+                        height: 32.0,
+                        child: const CircularProgressIndicator(),
+                      );
+                    case ButtonState.paused:
+                      return IconButton(
+                        icon: const Icon(Icons.play_arrow),
+                        iconSize: 32.0,
+                        onPressed: _pageManager.play,
+                      );
+                    case ButtonState.playing:
+                      return IconButton(
+                        icon: const Icon(Icons.pause),
+                        iconSize: 32.0,
+                        onPressed: _pageManager.pause,
+                      );
+                  }
+                },
+              ),
+            ],
+          ),
+        )),
+        Container(height: 50, color: Colors.grey),
+        SizedBox(
+            width: 300.0,
+            height: 300.0,
+            child: FutureBuilder(
+              future: fetchFollowedStream(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  final streamerList = snapshot.data as List<Streamer>;
+
+                  return Scaffold(
+                    body: Container(
+                      alignment: Alignment.center,
+                      child: ElevatedButton(
                         onPressed: () {
                           showModalBottomSheet(
                               context: context,
                               builder: (context) {
-                                return Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    for (var item in streamerList)
-                                      // const formatedImage = item.thumbnailUrl?.replaceAll('{width}', '15');
-                                      ListTile(
-                                        leading: Image(
-                                          image: NetworkImage(item.thumbnailUrl!
-                                              .replaceAll('{width}', '30')
-                                              .replaceAll('{height}', '30')),
-                                        ),
-                                        title: Text(item.userName!),
-                                        onTap: () {
-                                          Navigator.pop(context);
-                                        },
-                                      ),
-                                  ],
-                                );
+                                return SizedBox(
+                                    height: 200, // Some height
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: <Widget>[
+                                        for (var item in streamerList)
+                                          ListTile(
+                                            leading: Image(
+                                              image: NetworkImage(item
+                                                  .thumbnailUrl!
+                                                  .replaceAll('{width}', '30')
+                                                  .replaceAll(
+                                                      '{height}', '30')),
+                                            ),
+                                            title: Text(item.userName!),
+                                            onTap: () {
+                                              Navigator.pop(context);
+                                            },
+                                          ),
+                                      ],
+                                    ));
                               });
                         },
                         style: ElevatedButton.styleFrom(
@@ -163,18 +231,18 @@ class _MyHomePageState extends State<MyHomePage> {
                               letterSpacing: 0.6),
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              );
-            } else if (snapshot.hasError) {
-              // handle error here
-              return Text('${snapshot.error}');
-            } else {
-              return const CircularProgressIndicator(); // displays while loading data
-            }
-          },
-        ));
+                    ),
+                  );
+                } else if (snapshot.hasError) {
+                  // handle error here
+                  return Text('${snapshot.error}');
+                } else {
+                  return const CircularProgressIndicator(); // displays while loading data
+                }
+              },
+            ))
+      ]),
+    );
   }
 }
 

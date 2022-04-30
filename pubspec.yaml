@@ -17,6 +17,8 @@ dependencies:
   flutter_twitch: ^0.0.1
   http: ^0.13.4
   flutter_gen: ^4.1.6
+  just_audio: ^0.9.20
+  audio_video_progress_bar: ^0.10.0
 
 dev_dependencies:
   flutter_test:
