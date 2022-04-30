@@ -8,7 +8,7 @@
 .buildlog/
 .history
 .svn/
-lib/globals.dart
+
 
 
 # IntelliJ related
@@ -31,6 +31,9 @@ lib/globals.dart
 .pub-cache/
 .pub/
 build/
+
+
+
 
 
 # Android related
