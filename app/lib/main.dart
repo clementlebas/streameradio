@@ -1,6 +1,6 @@
 // import 'dart:_http';
 
-import 'dart:developer';
+// import 'dart:developer' show log;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_twitch/flutter_twitch.dart';
@@ -221,8 +221,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                                           1); // displays while loading data
                                                 }
 
-                                                log('snapshot' + urlImage);
-                                                log('thumbnailUrl' + urlImage1);
+                                                // log('snapshot' + urlImage);
+                                                // log('thumbnailUrl' + urlImage1);
 
                                                 return ListTile(
                                                   leading: SizedBox(
@@ -290,7 +290,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         },
                         style: ElevatedButton.styleFrom(
                           foregroundColor: Colors.black87,
-                          backgroundColor: const Color.fromRGBO(145, 70, 255, 1),
+                          backgroundColor:
+                              const Color.fromRGBO(145, 70, 255, 1),
                           shape: const RoundedRectangleBorder(
                             borderRadius: BorderRadius.all(Radius.circular(4)),
                           ),
@@ -338,13 +339,13 @@ class _TwitchUserState extends State<TwitchUser> {
     super.initState();
     user = widget.user;
     globals.userId = user.id;
-    log('login ${user.login}');
-    log('id ${user.id}');
-    log('id ${user.displayName}');
-    log('description ${user.description!}');
-    log('email ${user.email}');
-    log('broadcasterType ${user.broadcasterType!}');
-    log('viewCount ${user.viewCount.toString()}');
+    // log('login ${user.login}');
+    // log('id ${user.id}');
+    // log('id ${user.displayName}');
+    // log('description ${user.description!}');
+    // log('email ${user.email}');
+    // log('broadcasterType ${user.broadcasterType!}');
+    // log('viewCount ${user.viewCount.toString()}');
   }
 
   // Widget listUserChannels() {
