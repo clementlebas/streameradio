@@ -289,8 +289,8 @@ class _MyHomePageState extends State<MyHomePage> {
                               });
                         },
                         style: ElevatedButton.styleFrom(
-                          onPrimary: Colors.black87,
-                          primary: const Color.fromRGBO(145, 70, 255, 1),
+                          foregroundColor: Colors.black87,
+                          backgroundColor: const Color.fromRGBO(145, 70, 255, 1),
                           shape: const RoundedRectangleBorder(
                             borderRadius: BorderRadius.all(Radius.circular(4)),
                           ),
