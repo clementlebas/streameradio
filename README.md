@@ -1,9 +1,4 @@
 <!-- PROJECT LOGO -->
-<style>
-img {
-  border-radius: 99999px;
-}
-</style>
 <br />
 <div align="center">
   <a href="https://github.com/clementlebas/light-image-gallery">
